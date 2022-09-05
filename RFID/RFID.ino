@@ -14,6 +14,7 @@ byte nuidPICC[4];
 
 void setup() { 
   Serial.begin(9600);
+  servo.attach(2);
   SPI.begin(); // Init SPI bus
   rfid.PCD_Init(); // Init MFRC522 
 
@@ -46,13 +47,10 @@ void loop() {
     piccType != MFRC522::PICC_TYPE_MIFARE_4K) {
     Serial.println(F("Your tag is not of type MIFARE Classic."));
     return;
-  }
+  }    servo.write(90);
+    delay(1000);
+    servo.write(0);
 
-  if (rfid.uid.uidByte[0] != nuidPICC[0] || 
-    rfid.uid.uidByte[1] != nuidPICC[1] || 
-    rfid.uid.uidByte[2] != nuidPICC[2] || 
-    rfid.uid.uidByte[3] != nuidPICC[3] ) {
-    Serial.println(F("A new card has been detected."));
 
     // Store NUID into nuidPICC array
     for (byte i = 0; i < 4; i++) {
@@ -66,17 +64,10 @@ void loop() {
     Serial.print(F("In dec: "));
     printDec(rfid.uid.uidByte, rfid.uid.size);
     Serial.println();
-    servo.write(90);
-    delay(1000);
-    servo.write(0);
+
   
-  }
-  else {Serial.println(F("Card read previously."));
-  servo.write(90);
-  delay(1000);
-  servo.write(0);
   
-  }
+
   // Halt PICC
   rfid.PICC_HaltA();
 
